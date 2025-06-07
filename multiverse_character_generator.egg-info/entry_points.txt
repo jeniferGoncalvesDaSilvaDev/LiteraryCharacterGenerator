@@ -1,0 +1,2 @@
+[console_scripts]
+multiverse-gen = multiverse_character_generator.cli:main
