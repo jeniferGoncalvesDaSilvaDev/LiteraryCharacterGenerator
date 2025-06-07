@@ -1,0 +1,32 @@
+{
+  "name": "multiverse-character-generator-docs",
+  "version": "1.0.0",
+  "description": "Documentation website for Multiverse Character Generator",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start -p 5000",
+    "export": "next build && next export",
+    "deploy": "npm run export && gh-pages -d out"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "prismjs": "^1.29.0",
+    "react-syntax-highlighter": "^15.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "gh-pages": "^6.0.0",
+    "typescript": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/multiverse-character-generator.git"
+  },
+  "keywords": ["documentation", "character-generator", "gpt2", "python"],
+  "author": "Multiverse Character Generator Team",
+  "license": "MIT"
+}
