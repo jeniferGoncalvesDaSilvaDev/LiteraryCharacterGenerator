@@ -21,7 +21,7 @@ export default function Tutorial() {
 
   const codeExamples = {
     installation: `# Install the library
-pip install multiverse-character-generator
+pip install character-generator
 
 # Or install from source
 git clone https://github.com/your-username/multiverse-character-generator.git

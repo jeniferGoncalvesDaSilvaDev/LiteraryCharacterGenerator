@@ -25,7 +25,7 @@ def get_version():
     return "1.0.0"
 
 setup(
-    name="multiverse-character-generator",
+    name="character-generator",
     version=get_version(),
     author="Multiverse Character Generator Team",
     author_email="contact@multiversegen.com",

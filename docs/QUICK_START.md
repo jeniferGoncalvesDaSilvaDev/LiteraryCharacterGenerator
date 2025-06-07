@@ -3,7 +3,10 @@
 ## Instalação
 
 ```bash
-# Instalar dependências necessárias
+# Instalar a biblioteca
+pip install character-generator
+
+# Ou instalar dependências separadamente
 pip install torch transformers pydantic nltk numpy tokenizers
 
 # Opcional: Para desenvolvimento

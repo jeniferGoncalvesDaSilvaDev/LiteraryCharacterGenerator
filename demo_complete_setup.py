@@ -184,7 +184,7 @@ def show_cli_capabilities():
     print("=" * 60)
     
     print("\nInstallation and Usage:")
-    print("  pip install multiverse-character-generator")
+    print("  pip install character-generator")
     print("  multiverse-gen fantasy --save")
     print("  multiverse-gen sci-fi --details 'Android' 'Pilot' 'Rebels' 'Tatooine'")
     

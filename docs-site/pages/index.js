@@ -3,7 +3,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { tomorrow } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 export default function Home() {
-  const installCode = `pip install multiverse-character-generator`
+  const installCode = `pip install character-generator`
   
   const quickStartCode = `from multiverse_character_generator import MultiverseCharacterGenerator
 
