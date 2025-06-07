@@ -1,4 +1,4 @@
-modules = ["python-3.11"]
+modules = ["python-3.11", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
@@ -20,6 +20,10 @@ args = "Install and Test Library"
 task = "workflow.run"
 args = "test_library"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Documentation Site"
+
 [[workflows.workflow]]
 name = "Install and Test Library"
 author = "agent"
@@ -36,5 +40,18 @@ author = "agent"
 task = "shell.exec"
 args = "pip install torch transformers pydantic nltk numpy tokenizers && python examples/basic_usage.py"
 
+[[workflows.workflow]]
+name = "Documentation Site"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd docs-site && npm install && npm run dev"
+waitForPort = 5000
+
 [deployment]
 run = ["sh", "-c", "pip install torch transformers pydantic nltk numpy tokenizers pytest pytest-asyncio && python examples/basic_usage.py"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80

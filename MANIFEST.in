@@ -1,0 +1,18 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include pyproject.toml
+include setup.py
+
+recursive-include multiverse_character_generator *.py
+recursive-include docs *.md *.rst *.txt
+recursive-include examples *.py
+recursive-include tests *.py
+
+exclude .gitignore
+exclude .github/*
+exclude docs-site/*
+exclude *.pyc
+exclude __pycache__
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
