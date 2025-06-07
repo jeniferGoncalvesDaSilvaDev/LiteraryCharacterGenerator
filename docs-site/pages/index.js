@@ -82,7 +82,7 @@ print(character.character)`
           <p>Create compelling fictional characters using GPT-2 for fantasy, sci-fi, horror, cyberpunk, anime, and Marvel universes</p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/tutorial" className="btn btn-primary">Get Started</Link>
-            <a href="https://github.com/your-username/multiverse-character-generator" className="btn btn-secondary">View on GitHub</a>
+            <a href="https://github.com/jeniferGoncalvesDaSilvaDev/character_generator" className="btn btn-secondary">View on GitHub</a>
           </div>
         </div>
       </section>

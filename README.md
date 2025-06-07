@@ -44,8 +44,8 @@ pip install torch[cu118] transformers
 pip install character-generator
 
 # Ou instale em modo de desenvolvimento
-git clone https://github.com/your-username/multiverse-character-generator.git
-cd multiverse-character-generator
+git clone https://github.com/jeniferGoncalvesDaSilvaDev/character_generator.git
+cd character_generator
 pip install -e .
 
 # Ou instale usando setup.py

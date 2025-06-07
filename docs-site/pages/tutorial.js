@@ -24,8 +24,8 @@ export default function Tutorial() {
 pip install character-generator
 
 # Or install from source
-git clone https://github.com/your-username/multiverse-character-generator.git
-cd multiverse-character-generator
+git clone https://github.com/jeniferGoncalvesDaSilvaDev/character_generator.git
+cd character_generator
 pip install -e .`,
 
     basicUsage: `from multiverse_character_generator import MultiverseCharacterGenerator

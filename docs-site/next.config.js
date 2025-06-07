@@ -5,8 +5,8 @@ const nextConfig = {
   images: {
     unoptimized: true
   },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/multiverse-character-generator' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/multiverse-character-generator' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/character_generator' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/character_generator' : '',
 }
 
 module.exports = nextConfig
