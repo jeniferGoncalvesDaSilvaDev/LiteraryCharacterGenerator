@@ -1,29 +1,649 @@
 # Multiverse Character Generator
 
-A powerful Python library for generating detailed fictional characters across multiple universes using GPT-2. Create compelling characters for fantasy, sci-fi, horror, cyberpunk, anime, and Marvel universes with customizable parameters and intelligent prompt engineering.
+Uma biblioteca Python poderosa para gerar personagens ficcionais detalhados em múltiplos universos usando GPT-2. Crie personagens convincentes para universos de fantasia, ficção científica, terror, cyberpunk, anime e Marvel com parâmetros customizáveis e engenharia inteligente de prompts.
 
-## Features
+## Características
 
-- 🌟 **Multiple Universes**: Support for 6 distinct fictional universes
-- 🎯 **Customizable Generation**: Fine-tune temperature, length, and other parameters
-- ⚡ **Async Support**: Both synchronous and asynchronous interfaces
-- 💾 **File Operations**: Save characters to files with formatted output
-- 🛡️ **Error Handling**: Comprehensive error handling and validation
-- 🎮 **Easy Integration**: Simple API for integration into games, apps, and tools
-- 🚀 **GPU Acceleration**: Automatic GPU detection and usage
+- 🌟 **Múltiplos Universos**: Suporte para 6 universos ficcionais distintos
+- 🎯 **Geração Customizável**: Ajuste fino de temperatura, comprimento e outros parâmetros
+- ⚡ **Suporte Async**: Interfaces síncronas e assíncronas
+- 💾 **Operações de Arquivo**: Salve personagens em arquivos com saída formatada
+- 🛡️ **Tratamento de Erros**: Tratamento abrangente de erros e validação
+- 🎮 **Integração Fácil**: API simples para integração em jogos, aplicativos e ferramentas
+- 🚀 **Aceleração GPU**: Detecção e uso automático de GPU
 
-## Supported Universes
+## Universos Suportados
 
-| Universe | Required Details | Example |
-|----------|------------------|---------|
-| **Fantasy** | Race, Class, Alignment, Origin | Elf Wizard from Mystic Forest |
-| **Sci-Fi** | Species, Profession, Affiliation, Planet | Cyborg Pilot from Proxima Centauri |
-| **Horror** | Occupation, Phobia, Cursed Relic, Haunted Location | Journalist afraid of spiders |
-| **Cyberpunk** | Cybernetic Implants, Corporate Affiliation, Criminal Specialization, Urban District | Netrunner with bionic arms |
-| **Anime** | Character Type, Unique Ability, Backstory, Goal | Shonen protagonist seeking revenge |
-| **Marvel** | Power Origin, Affiliation, Archetype, Location | Mutant hero from New York |
+| Universo | Detalhes Obrigatórios | Exemplo |
+|----------|----------------------|---------|
+| **Fantasia** | Raça, Classe, Alinhamento, Reino de Origem | Elfo Mago da Floresta Mística |
+| **Sci-Fi** | Espécie, Profissão, Afiliação, Planeta Natal | Piloto Ciborgue de Proxima Centauri |
+| **Terror** | Ocupação, Fobia, Relíquia Amaldiçoada, Local Assombrado | Jornalista com medo de aranhas |
+| **Cyberpunk** | Implantes Cibernéticos, Afiliação Corporativa, Especialização Criminal, Distrito Urbano | Netrunner com braços biônicos |
+| **Anime** | Tipo de Personagem, Habilidade Única, Backstory, Objetivo | Protagonista shonen buscando vingança |
+| **Marvel** | Origem do Poder, Afiliação, Arquétipo, Localização | Herói mutante de Nova York |
 
-## Installation
+## Instalação
+
+### Dependências
 
 ```bash
-pip install multiverse-character-generator
+pip install torch transformers pydantic nltk numpy tokenizers
+
+# Para desenvolvimento e testes
+pip install pytest pytest-asyncio
+
+# Opcional: Para suporte a GPU (CUDA)
+pip install torch[cu118] transformers
+```
+
+### Instalação da Biblioteca
+
+```bash
+# Clone o repositório
+git clone https://github.com/your-username/multiverse-character-generator.git
+cd multiverse-character-generator
+
+# Instale em modo de desenvolvimento
+pip install -e .
+
+# Ou instale usando setup.py
+python setup.py install
+```
+
+## Início Rápido
+
+### Uso Básico
+
+```python
+from multiverse_character_generator import MultiverseCharacterGenerator
+
+# Inicializar o gerador
+generator = MultiverseCharacterGenerator()
+
+# Gerar um personagem de fantasia
+character = generator.generate_character(
+    universe="fantasia",
+    details=["Halfling", "Ladino", "Neutro Caótico", "Cidade Ribeirinha"]
+)
+
+print(character.character)
+```
+
+### Geração Rápida
+
+```python
+# Usar exemplos pré-definidos para geração rápida
+character = generator.quick_generate("cyberpunk")
+print(character.character)
+```
+
+### Geração Assíncrona
+
+```python
+import asyncio
+
+async def generate_multiple():
+    # Gerar múltiplos personagens concorrentemente
+    tasks = [
+        generator.generate_character_async("fantasia", ["Elfo", "Mago", "Lawful Good", "Floresta Antiga"]),
+        generator.generate_character_async("sci-fi", ["Humano", "Engenheiro", "Federação", "Estação Espacial"]),
+        generator.generate_character_async("anime", ["Estudante", "Magia de Fogo", "Vila Destruída", "Tornar-se Herói"])
+    ]
+    
+    characters = await asyncio.gather(*tasks)
+    return characters
+
+# Executar
+characters = asyncio.run(generate_multiple())
+```
+
+### Salvando em Arquivo
+
+```python
+# Salvar personagem em arquivo
+character = generator.generate_character(
+    universe="terror",
+    details=["Médico", "Claustrofobia", "Kit Médico", "Hospital Abandonado"],
+    save_to_file=True,
+    output_dir="./personagens"
+)
+
+print(f"Personagem salvo em: {character.filename}")
+```
+
+## Documentação da API
+
+### Classe Principal: MultiverseCharacterGenerator
+
+#### Inicialização
+
+```python
+generator = MultiverseCharacterGenerator(
+    model_name="gpt2-medium",  # Modelo GPT-2 a usar
+    use_gpu=None,              # Auto-detectar GPU (None) ou forçar CPU/GPU (bool)
+    cache_dir=None             # Diretório para cache de modelos
+)
+```
+
+**Parâmetros:**
+- `model_name` (str): Nome do modelo GPT-2. Opções: "gpt2", "gpt2-medium", "gpt2-large", "gpt2-xl"
+- `use_gpu` (Optional[bool]): Se deve usar GPU. None para auto-detecção
+- `cache_dir` (Optional[str]): Diretório para armazenar modelos em cache
+
+#### Métodos Principais
+
+##### `generate_character()`
+
+Gera um personagem com detalhes customizados.
+
+```python
+character = generator.generate_character(
+    universe="fantasia",
+    details=["Elfo", "Ranger", "Neutro", "Floresta Prateada"],
+    max_length=350,
+    temperature=0.85,
+    top_p=0.92,
+    repetition_penalty=1.2,
+    save_to_file=False,
+    output_dir=None
+)
+```
+
+**Parâmetros:**
+- `universe` (str): Universo fictício ("fantasia", "sci-fi", "terror", "cyberpunk", "anime", "marvel")
+- `details` (List[str]): Lista de detalhes do personagem correspondentes aos requisitos do universo
+- `max_length` (int): Comprimento máximo do texto gerado (50-1000)
+- `temperature` (float): Temperatura de amostragem (0.0-1.0) - controla criatividade
+- `top_p` (float): Parâmetro de amostragem nucleus (0.0-1.0)
+- `repetition_penalty` (float): Penalidade por repetição (1.0-2.0)
+- `save_to_file` (bool): Se deve salvar em arquivo
+- `output_dir` (Optional[str]): Diretório para salvar arquivos
+
+**Retorna:** `GeneratedCharacter` com texto do personagem e nome do arquivo (se salvo)
+
+##### `quick_generate()`
+
+Gera um personagem usando exemplos pré-definidos.
+
+```python
+character = generator.quick_generate(
+    universe="cyberpunk",
+    max_length=300,
+    temperature=0.8
+)
+```
+
+##### `generate_character_async()` e `quick_generate_async()`
+
+Versões assíncronas dos métodos acima para geração concorrente.
+
+##### Métodos Utilitários
+
+```python
+# Listar universos disponíveis
+universes = generator.list_universes()
+
+# Obter informações sobre um universo
+info = generator.get_universe_info("fantasia")
+
+# Obter informações do modelo
+model_info = generator.get_model_info()
+```
+
+### Modelos de Dados
+
+#### CharacterDetails
+
+```python
+from multiverse_character_generator.models import CharacterDetails
+
+details = CharacterDetails(
+    universe="fantasia",
+    details=["Elfo", "Mago", "Lawful Good", "Torre Arcana"]
+)
+```
+
+#### GeneratedCharacter
+
+```python
+from multiverse_character_generator.models import GeneratedCharacter
+
+character = GeneratedCharacter(
+    character="Descrição detalhada do personagem...",
+    filename="character_elfo_mago_20241207.txt"  # Opcional
+)
+```
+
+### Tratamento de Erros
+
+A biblioteca fornece exceções específicas para diferentes tipos de erro:
+
+```python
+from multiverse_character_generator.exceptions import (
+    InvalidUniverseError,
+    InvalidDetailsError,
+    GenerationError,
+    ModelInitializationError
+)
+
+try:
+    character = generator.generate_character("universo_invalido", ["detalhe"])
+except InvalidUniverseError as e:
+    print(f"Universo inválido: {e}")
+except InvalidDetailsError as e:
+    print(f"Detalhes inválidos: {e}")
+except GenerationError as e:
+    print(f"Erro na geração: {e}")
+```
+
+## Configuração de Universos
+
+### Fantasia
+
+**Campos obrigatórios:** Raça, Classe, Alinhamento, Reino de Origem
+
+```python
+character = generator.generate_character(
+    universe="fantasia",
+    details=["Half-Orc", "Paladino", "Lawful Good", "Bosque Sagrado"]
+)
+```
+
+### Ficção Científica
+
+**Campos obrigatórios:** Espécie, Profissão, Afiliação, Planeta Natal
+
+```python
+character = generator.generate_character(
+    universe="sci-fi",
+    details=["Sintético", "Arqueólogo", "Independente", "Nave Antiga"]
+)
+```
+
+### Terror
+
+**Campos obrigatórios:** Ocupação, Fobia, Relíquia Amaldiçoada, Local Assombrado
+
+```python
+character = generator.generate_character(
+    universe="terror",
+    details=["Curador", "Tripofobia", "Máscara Ritual", "Museu Subterrâneo"]
+)
+```
+
+### Cyberpunk
+
+**Campos obrigatórios:** Implantes Cibernéticos, Afiliação Corporativa/Gangue, Especialização Criminal, Distrito Urbano
+
+```python
+character = generator.generate_character(
+    universe="cyberpunk",
+    details=["Interface Neural", "Corretor de Informações", "Rede Sombria", "Porto de Dados"]
+)
+```
+
+### Anime
+
+**Campos obrigatórios:** Tipo de Personagem, Habilidade Única, Backstory, Objetivo
+
+```python
+character = generator.generate_character(
+    universe="anime",
+    details=["Mestre da Espada", "Estilo Relâmpago", "Mestre Morto", "Buscar Verdade"]
+)
+```
+
+### Marvel
+
+**Campos obrigatórios:** Origem do Poder, Afiliação, Arquétipo, Localização
+
+```python
+character = generator.generate_character(
+    universe="marvel",
+    details=["Poderes Magnéticos", "Irmandade", "Anti-Herói", "Cidade Industrial"]
+)
+```
+
+## Configurações Avançadas
+
+### Otimização de Parâmetros por Universo
+
+Diferentes universos se beneficiam de configurações específicas:
+
+```python
+# Configurações otimizadas para fantasia
+fantasy_config = {
+    "temperature": 0.8,
+    "top_p": 0.9,
+    "repetition_penalty": 1.2,
+    "max_length": 350
+}
+
+# Configurações otimizadas para cyberpunk
+cyberpunk_config = {
+    "temperature": 0.85,
+    "top_p": 0.92,
+    "repetition_penalty": 1.4,
+    "max_length": 320
+}
+
+character = generator.generate_character(
+    universe="fantasia",
+    details=["Tiefling", "Bardo", "Chaotic Neutral", "Taverna"],
+    **fantasy_config
+)
+```
+
+### Controle de Criatividade
+
+```python
+# Mais conservador (previsível)
+conservative = generator.generate_character(
+    universe="anime",
+    details=["Piloto Mecha", "Poderes Psíquicos", "Colônia Destruída", "Lutar Aliens"],
+    temperature=0.3,
+    top_p=0.7
+)
+
+# Mais criativo (diverso)
+creative = generator.generate_character(
+    universe="anime",
+    details=["Piloto Mecha", "Poderes Psíquicos", "Colônia Destruída", "Lutar Aliens"],
+    temperature=1.0,
+    top_p=0.95
+)
+```
+
+### Processamento em Lote
+
+```python
+import asyncio
+
+async def batch_generation():
+    requests = [
+        ("fantasia", ["Orc", "Guerreiro", "Chaotic Evil", "Montanhas Sombrias"]),
+        ("sci-fi", ["Robô", "Médico", "Marinha Espacial", "Nave Médica"]),
+        ("cyberpunk", ["Implante Neural", "Courier de Dados", "Freelancer", "Subterrâneo"])
+    ]
+    
+    tasks = [
+        generator.generate_character_async(universe, details, max_length=200)
+        for universe, details in requests
+    ]
+    
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    successful = [r for r in results if not isinstance(r, Exception)]
+    print(f"Gerados {len(successful)} de {len(requests)} personagens")
+    
+    return successful
+
+characters = asyncio.run(batch_generation())
+```
+
+## Exemplos de Uso
+
+### Integração em Jogos
+
+```python
+class GameCharacterGenerator:
+    def __init__(self):
+        self.generator = MultiverseCharacterGenerator(model_name="gpt2")
+    
+    def create_npc(self, universe_type, player_level):
+        # Gerar NPC baseado no nível do jogador
+        if player_level < 5:
+            length = 150  # Descrição mais curta para NPCs menores
+        else:
+            length = 300  # Descrição detalhada para NPCs importantes
+        
+        character = self.generator.quick_generate(
+            universe=universe_type,
+            max_length=length,
+            temperature=0.8
+        )
+        
+        return character.character
+
+# Uso no jogo
+game_gen = GameCharacterGenerator()
+tavern_keeper = game_gen.create_npc("fantasia", player_level=3)
+```
+
+### Sistema de Campanha de RPG
+
+```python
+class CampaignManager:
+    def __init__(self):
+        self.generator = MultiverseCharacterGenerator()
+        self.campaign_characters = []
+    
+    async def generate_party(self, universe, party_configs):
+        """Gerar grupo de personagens para campanha"""
+        tasks = [
+            self.generator.generate_character_async(
+                universe=universe,
+                details=config["details"],
+                save_to_file=True,
+                output_dir=f"./campaigns/{universe}/party"
+            )
+            for config in party_configs
+        ]
+        
+        party = await asyncio.gather(*tasks)
+        self.campaign_characters.extend(party)
+        return party
+    
+    def save_campaign(self, campaign_name):
+        """Salvar todos os personagens da campanha"""
+        # Implementar salvamento de campanha
+        pass
+
+# Exemplo de uso
+manager = CampaignManager()
+
+party_configs = [
+    {"details": ["Elfo", "Ranger", "Chaotic Good", "Floresta Ancestral"]},
+    {"details": ["Anão", "Clérigo", "Lawful Good", "Montanha Sagrada"]},
+    {"details": ["Humano", "Ladino", "Chaotic Neutral", "Cidade Portuária"]}
+]
+
+party = asyncio.run(manager.generate_party("fantasia", party_configs))
+```
+
+### Ferramenta de Escrita Criativa
+
+```python
+class StoryWriter:
+    def __init__(self):
+        self.generator = MultiverseCharacterGenerator()
+    
+    def create_character_profiles(self, story_universe, num_characters=3):
+        """Criar perfis de personagens para uma história"""
+        characters = []
+        
+        for i in range(num_characters):
+            character = self.generator.quick_generate(
+                universe=story_universe,
+                temperature=0.9,  # Mais criativo para escrita
+                max_length=400
+            )
+            characters.append({
+                "id": f"character_{i+1}",
+                "profile": character.character,
+                "universe": story_universe
+            })
+        
+        return characters
+    
+    def generate_character_interactions(self, char1_details, char2_details, universe):
+        """Gerar interações entre personagens"""
+        # Implementar lógica de interação
+        pass
+
+# Uso para escrita
+writer = StoryWriter()
+story_characters = writer.create_character_profiles("cyberpunk", 5)
+
+for char in story_characters:
+    print(f"\n{char['id'].upper()}:")
+    print(char['profile'][:200] + "...")
+```
+
+## Testes
+
+### Executar Testes
+
+```bash
+# Executar todos os testes
+pytest
+
+# Executar testes específicos
+pytest tests/test_generator.py
+
+# Executar testes com cobertura
+pytest --cov=multiverse_character_generator
+
+# Executar testes assíncronos
+pytest -m asyncio
+```
+
+### Testes Customizados
+
+```python
+import pytest
+from multiverse_character_generator import MultiverseCharacterGenerator
+
+def test_custom_universe():
+    generator = MultiverseCharacterGenerator(model_name="gpt2")
+    
+    # Testar geração para todos os universos
+    universes = generator.list_universes()
+    assert len(universes) == 6
+    
+    for universe in universes:
+        character = generator.quick_generate(universe, max_length=100)
+        assert len(character.character) > 0
+        assert isinstance(character.character, str)
+```
+
+## Solução de Problemas
+
+### Problemas Comuns
+
+#### Erro de Memória GPU
+
+```python
+# Forçar uso da CPU se GPU não tiver memória suficiente
+generator = MultiverseCharacterGenerator(use_gpu=False)
+```
+
+#### Modelo não Encontrado
+
+```bash
+# Verificar se os modelos estão instalados
+python -c "from transformers import AutoModel; AutoModel.from_pretrained('gpt2')"
+```
+
+#### Dependências em Falta
+
+```bash
+# Instalar todas as dependências necessárias
+pip install torch transformers pydantic nltk numpy tokenizers
+```
+
+### Configuração de Log
+
+```python
+import logging
+from multiverse_character_generator.utils import setup_logging
+
+# Configurar logging detalhado
+logger = setup_logging(level="DEBUG", log_file="generation.log")
+```
+
+### Otimização de Performance
+
+```python
+# Para geração mais rápida
+fast_generator = MultiverseCharacterGenerator(
+    model_name="gpt2",  # Modelo menor
+    use_gpu=True        # Usar GPU se disponível
+)
+
+# Configurações para velocidade
+speed_config = {
+    "max_length": 150,
+    "temperature": 0.5,
+    "top_p": 0.8
+}
+```
+
+## Contribuição
+
+### Desenvolvendo
+
+```bash
+# Clonar repositório
+git clone https://github.com/your-username/multiverse-character-generator.git
+cd multiverse-character-generator
+
+# Criar ambiente virtual
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# venv\Scripts\activate   # Windows
+
+# Instalar dependências de desenvolvimento
+pip install -e ".[dev]"
+
+# Executar testes
+pytest
+
+# Verificar código
+flake8 multiverse_character_generator/
+mypy multiverse_character_generator/
+```
+
+### Adicionando Novos Universos
+
+Para adicionar um novo universo, edite `multiverse_character_generator/universes.py`:
+
+```python
+def get_universes():
+    universes = {
+        # ... universos existentes ...
+        
+        "novo_universo": {
+            "inputs": ["Campo1", "Campo2", "Campo3"],
+            "exemplos": ["Exemplo1", "Exemplo2", "Exemplo3"]
+        }
+    }
+    
+    # Adicionar template de prompt
+    templates["novo_universo"] = (
+        "Crie um personagem de novo universo com:\n"
+        "- Campo1: {0}\n- Campo2: {1}\n- Campo3: {2}\n"
+        "Inclua características específicas do universo."
+    )
+```
+
+## Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## Suporte
+
+- **Issues**: [GitHub Issues](https://github.com/your-username/multiverse-character-generator/issues)
+- **Documentação**: Este README e comentários no código
+- **Exemplos**: Pasta `examples/` com scripts demonstrativos
+
+## Changelog
+
+### v1.0.0
+- Implementação inicial
+- Suporte para 6 universos ficcionais
+- Geração síncrona e assíncrona
+- Sistema de validação completo
+- Tratamento abrangente de erros
+- Documentação completa
