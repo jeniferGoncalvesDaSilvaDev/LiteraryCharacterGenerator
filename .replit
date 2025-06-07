@@ -1,0 +1,40 @@
+modules = ["python-3.11"]
+
+[nix]
+channel = "stable-24_05"
+packages = ["cargo", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Install and Test Library"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "test_library"
+
+[[workflows.workflow]]
+name = "Install and Test Library"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install torch transformers pydantic nltk numpy tokenizers pytest pytest-asyncio && python examples/basic_usage.py"
+
+[[workflows.workflow]]
+name = "test_library"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "pip install torch transformers pydantic nltk numpy tokenizers && python examples/basic_usage.py"
+
+[deployment]
+run = ["sh", "-c", "pip install torch transformers pydantic nltk numpy tokenizers pytest pytest-asyncio && python examples/basic_usage.py"]
