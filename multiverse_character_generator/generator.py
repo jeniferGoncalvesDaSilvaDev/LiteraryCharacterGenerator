@@ -6,13 +6,10 @@ import asyncio
 import logging
 import os
 from typing import Dict, List, Optional, Union
-import torch
-import nltk
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
 
 from .models import CharacterDetails, GeneratedCharacter
 from .universes import get_universes, create_prompt
-from .exceptions import InvalidUniverseError, InvalidDetailsError, GenerationError
+from .exceptions import InvalidUniverseError, InvalidDetailsError, GenerationError, ModelInitializationError
 from .utils import setup_logging, save_character_to_file
 
 # Setup logging
@@ -57,7 +54,10 @@ class MultiverseCharacterGenerator:
     def _setup_nltk(self) -> None:
         """Download required NLTK data."""
         try:
+            import nltk
             nltk.data.find('tokenizers/punkt')
+        except ImportError:
+            raise ModelInitializationError("NLTK is not installed. Install with: pip install nltk")
         except LookupError:
             logger.info("Downloading NLTK punkt tokenizer...")
             nltk.download('punkt', quiet=True)
@@ -65,6 +65,10 @@ class MultiverseCharacterGenerator:
     def _initialize_model(self) -> None:
         """Initialize the GPT-2 model and tokenizer."""
         try:
+            # Import heavy dependencies only when needed
+            import torch
+            from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+            
             logger.info(f"Loading model: {self.model_name}")
             
             # Load tokenizer and model
@@ -88,9 +92,14 @@ class MultiverseCharacterGenerator:
             
             logger.info("Model initialized successfully")
             
+        except ImportError as e:
+            raise ModelInitializationError(
+                f"Required dependencies not installed. Install with: pip install torch transformers",
+                cause=e
+            )
         except Exception as e:
             logger.error(f"Failed to initialize model: {str(e)}")
-            raise GenerationError(f"Model initialization failed: {str(e)}")
+            raise ModelInitializationError(f"Model initialization failed: {str(e)}", cause=e)
     
     def generate_character(
         self,
