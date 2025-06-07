@@ -27,7 +27,7 @@ class MultiverseCharacterGenerator:
     def __init__(
         self,
         model_name: str = "gpt2-medium",
-        use_gpu: bool = None,
+        use_gpu: Optional[bool] = None,
         cache_dir: Optional[str] = None
     ):
         """
@@ -39,8 +39,17 @@ class MultiverseCharacterGenerator:
             cache_dir: Directory to cache model files
         """
         self.model_name = model_name
-        self.use_gpu = use_gpu if use_gpu is not None else torch.cuda.is_available()
         self.cache_dir = cache_dir
+        
+        # Initialize GPU setting with lazy torch import
+        if use_gpu is None:
+            try:
+                import torch
+                self.use_gpu = torch.cuda.is_available()
+            except ImportError:
+                self.use_gpu = False
+        else:
+            self.use_gpu = use_gpu
         
         # Initialize components
         self._setup_nltk()
@@ -364,9 +373,16 @@ class MultiverseCharacterGenerator:
         Returns:
             Dictionary with model information
         """
+        device_info = "unknown"
+        if hasattr(self, 'model') and self.model is not None:
+            try:
+                device_info = str(next(self.model.parameters()).device)
+            except:
+                device_info = "cpu"
+        
         return {
             "model_name": self.model_name,
             "using_gpu": self.use_gpu,
-            "cache_dir": self.cache_dir,
-            "device": str(next(self.model.parameters()).device)
+            "cache_dir": self.cache_dir or "default",
+            "device": device_info
         }
